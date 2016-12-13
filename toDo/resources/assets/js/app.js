@@ -1,0 +1,62 @@
+
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
+
+Vue.component('categories', require('./components/categories.vue'));
+Vue.component('tasks', require('./components/tasks.vue'));
+
+const app = new Vue({
+    el: '#app',
+    data:{
+        current:'all',
+        categories:[
+            { name:'all', edit: false },
+            { name:'home', edit: false },
+            { name:'office', edit: false },
+            { name:'weekend', edit: false },
+        ],
+        tasks:[
+            { name:'do the dishes', category: 'home', completed:false, schedule:'',},
+            { name:'wash the floor', category: 'home', completed:false, schedule:'',},
+            { name:'star the new project', category: 'office', completed:false, schedule:'',},
+            { name:'call the client', category: 'office', completed:false, schedule:'',},
+            { name:'finish the project', category: 'office', completed:false, schedule:'',},
+            { name:'call John', category: 'weekend', completed:false, schedule:'',},
+            { name:'play football', category: 'weekend', completed:false, schedule:'',},
+        ]
+    },
+    methods:{
+        makeCurrent: function(category){
+            this.current = category;
+        },
+        changeName: function(newName,oldName){
+            this.tasks.forEach(function(task){
+                if(task.category == oldName)
+                    task.category = newName;
+            });
+        },
+        addCategory: function(newCategory){
+            this.categories.forEach(function(category){
+                if(category.name == newCategory)
+                    return;
+            });
+            app.categories.push({name:newCategory, edit:false});
+        },
+        deleteCompleted: function(){
+            for(let i = 0; i < this.tasks.length ; i++){
+                if(this.tasks[i].completed){
+                    this.tasks.splice(i,1);
+                    i--;
+                }
+            }
+        }
+    }
+});
+
+$(function () {
+    $('#datetimepicker1').datetimepicker();
+});
+

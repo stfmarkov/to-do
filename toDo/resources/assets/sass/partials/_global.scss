@@ -1,0 +1,45 @@
+.content{
+  padding-left: 25%;
+  @media screen and (max-width: 768px){
+    padding-left: 33%;
+  }
+  @media screen and (max-width: 480px){
+    padding-left:0;
+    padding-top: 40px;
+  }
+}
+body{
+  background:#eee;
+  font-family: 'Lato', sans-serif;
+}
+ul{
+  list-style-type: none;
+  padding: 0;
+}
+a,
+a:focus,
+a:hover,
+a:visited{
+  text-decoration: none;
+  color: inherit;
+}
+
+.relative{
+  position: relative;
+}
+.date__input,
+.date__input:focus{
+  border:none;
+  outline: none;
+  box-shadow: none;
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 25px;
+}
+.date__btn{
+  background: none;
+  border:none;
+  padding-bottom: 0;
+  padding-top:0;
+}
+

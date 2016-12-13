@@ -1,0 +1,26 @@
+{
+  "name": "toDo",
+  "description": "simple todo app based on vue.js",
+  "main": "",
+  "authors": [
+    "stfmarkov <stf.markov@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.1.1",
+    "vue": "^2.1.0",
+    "font-awesome": "font-awsome#^4.7.0",
+    "moment": "^2.17.0",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.43"
+  }
+}

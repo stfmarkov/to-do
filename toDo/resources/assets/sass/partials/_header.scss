@@ -1,0 +1,30 @@
+.header{
+  line-height: 40px;
+  height: 40px;
+  background: $color4;
+  color: #fff;
+}
+.header__item{
+  display: inline-block;
+}
+.header__nav{
+  float: right;
+}
+.header__nav .header__item{
+  padding:0 5px;
+  margin-left: 10px;
+}
+.header__form{
+  margin-left: 25%;
+}
+.header__input{
+  background: transparent;
+  border: none;
+  &:focus{
+    border: none;
+    outline: none;
+  }
+  &::placeholder{
+    color:lighten($color4, 50%);
+  }
+}
