@@ -41,6 +41,14 @@
             <input class="categories__input" type="text" placeholder="Add category" v-model='newCategory'>
             <button class="categories__button" @click.prevent="addCategory">Add</button>
         </form>
+
+        <div class='input-group date categories__input categories__input_small' id='datetimepicker2'>
+            <input type='text' class="form-control date__input" placeholder="Schedule" v-model='schedule'/>
+                    <span class="input-group-addon date__btn">
+                        <span class="glyphicon glyphicon-calendar date__icon"></span>
+                    </span>
+        </div>
+        <button class="categories__button" @click.prevent="checkDate">Check</button>
     </div>
 </template>
 
@@ -54,10 +62,21 @@
                 currentCategory:'',
                 oldName:'',
                 notEmpty:false,
-                isActive:false
+                isActive:false,
+                schedule:''
             }
         },
-
+        computed: {
+            taskDate: function(){
+                let date = this.schedule.split(' ');
+                let time = date[1];
+                let temp = date[0].split("/");
+                let month = temp[0];
+                let day = temp[1];
+                let year = temp[2];
+                return {day: day, month: month, year: year, time:time};
+            }
+        },
         methods:{
             checkEmpty: function(category){
             let counter = 0;
@@ -105,6 +124,9 @@
             },
             saveName: function(oldName){
                 this.oldName = oldName;
+            },
+            checkDate: function(){
+                this.$emit('schedule',this.taskDate);
             }
         }
     }

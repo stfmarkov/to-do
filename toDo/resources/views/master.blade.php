@@ -34,13 +34,15 @@
 						:current="current"
 						:tasks="tasks"
 						v-on:current="makeCurrent"
-						v-on:name="changeName">
+						v-on:name="changeName"
+						v-on:schedule = "setSchedule">
 				</component>
 				<div class="content">
 					<component
 							is="tasks"
 							:tasks = 'tasks'
 							:current="current"
+							:scheduled="scheduled"
 							v-on:category="addCategory"
 							v-on:delete="deleteCompleted"
 					></component>

@@ -12,6 +12,7 @@ const app = new Vue({
     el: '#app',
     data:{
         current:'all',
+        scheduled:'schedule',
         categories:[
             { name:'all', edit: false },
             { name:'home', edit: false },
@@ -19,11 +20,11 @@ const app = new Vue({
             { name:'weekend', edit: false },
         ],
         tasks:[
-            { name:'do the dishes', category: 'home', completed:false, schedule:'',},
+            { name:'do the dishes', category: 'home', completed:false, schedule:{day: "15", month: "12", time: "5:51", year: "2016"},},
             { name:'wash the floor', category: 'home', completed:false, schedule:'',},
-            { name:'star the new project', category: 'office', completed:false, schedule:'',},
+            { name:'star the new project', category: 'office', completed:false, schedule:{day: "15", month: "12", time: "5:51", year: "2016"},},
             { name:'call the client', category: 'office', completed:false, schedule:'',},
-            { name:'finish the project', category: 'office', completed:false, schedule:'',},
+            { name:'finish the project', category: 'office', completed:false, schedule:{day: "15", month: "12", time: "5:51", year: "2016"},},
             { name:'call John', category: 'weekend', completed:false, schedule:'',},
             { name:'play football', category: 'weekend', completed:false, schedule:'',},
         ]
@@ -31,6 +32,9 @@ const app = new Vue({
     methods:{
         makeCurrent: function(category){
             this.current = category;
+        },
+        setSchedule: function(schedule){
+            this.scheduled = schedule;
         },
         changeName: function(newName,oldName){
             this.tasks.forEach(function(task){
@@ -52,11 +56,15 @@ const app = new Vue({
                     i--;
                 }
             }
-        }
+        },
     }
 });
 
 $(function () {
     $('#datetimepicker1').datetimepicker();
 });
+$(function () {
+    $('#datetimepicker2').datetimepicker();
+});
+
 

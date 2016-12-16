@@ -4,11 +4,12 @@
         <span v-show="tasksLeft" class="tasks__message">You have {{tasksLeft}} tasks from this category</span>
         <ul class="tasks__list">
                     <li v-for="task in tasks"
-                        v-if="(isCurrent(task) || current == 'all')&& !task.completed"
+                        v-if="isToday(task) && (isCurrent(task) || current == 'all')&& !task.completed"
                         @click="task.edit = !task.edit "
                         class="tasks__item clearfix"
                     >
                         <input type="text" v-model="task.name" class="tasks__text">
+                        <span class="tasks__text"> for {{task.schedule.day}} / {{task.schedule.month}}</span>
                          <span @click.stop='deleteTask(task)' class="tasks__delete tasks__control">
                              <i class="fa fa-times" aria-hidden="true"></i>
                           </span>
@@ -22,7 +23,7 @@
             <input class="tasks__input tasks__input_small" type="text" placeholder="Add task" v-model='newTask'>
             <input class="tasks__input tasks__input_small" type="text" placeholder="Add category" v-model='taskCategory'>
             <div class='input-group date tasks__input tasks__input_small' id='datetimepicker1'>
-                <input type='text' class="form-control date__input" placeholder="Schedule" v-model='schedule' />
+                <input type='text' class="form-control date__input" placeholder="Schedule" v-model='schedule'/>
                     <span class="input-group-addon date__btn">
                         <span class="glyphicon glyphicon-calendar date__icon"></span>
                     </span>
@@ -51,7 +52,7 @@
 
 <script>
     export default {
-        props:['tasks', 'current'],
+        props:['tasks', 'current', 'scheduled'],
         data: function(){
             return{
                 newTask:'',
@@ -78,7 +79,6 @@
             }
         },
         methods:{
-
             isCompleted: function(task){
                 return task.completed;
             },
@@ -94,6 +94,15 @@
                 }
                 else
                     return false
+            },
+            isToday:function(task){
+                if(task.schedule.day == this.scheduled.day){
+                    return true
+                }else if(this.scheduled.day == undefined){
+                    return true
+                }else{
+                    return false
+                }
             },
             deleteTask: function(task){
                     this.tasks.splice(this.tasks.indexOf(task), 1);
@@ -111,12 +120,12 @@
                                         name: this.newTask,
                                         category:this.taskCategory,
                                         completed: false,
-                                        schedule:this.taskDate,
+                                        schedule:this.schedule,
                                      });
                     this.$emit('category',this.taskCategory);
                     this.newTask = '';
                     this.taskCategory = '';
-
+                    this.taskDate = '';
                 };
                 return
             },
