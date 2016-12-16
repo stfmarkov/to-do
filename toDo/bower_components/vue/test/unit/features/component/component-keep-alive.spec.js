@@ -265,7 +265,7 @@ describe('Component keep-alive', () => {
             <keep-alive>
               <component :is="view" class="test"></component>
             </keep-alive>
-          <transition>
+          </transition>
         </div>`,
         data: {
           view: 'one'
@@ -503,6 +503,58 @@ describe('Component keep-alive', () => {
           '<div class="test">one</div>'
         )
       }).then(done).then(done)
+    })
+
+    // #4339
+    it('component with inner transition', done => {
+      const vm = new Vue({
+        template: `
+          <div>
+            <keep-alive>
+              <component ref="test" :is="view"></component>
+            </keep-alive>
+          </div>
+        `,
+        data: { view: 'foo' },
+        components: {
+          foo: { template: '<transition><div class="test">foo</div></transition>' },
+          bar: { template: '<transition name="test"><div class="test">bar</div></transition>' }
+        }
+      }).$mount(el)
+
+      // should not apply transition on initial render by default
+      expect(vm.$el.innerHTML).toBe('<div class="test">foo</div>')
+      vm.view = 'bar'
+      waitForUpdate(() => {
+        expect(vm.$el.innerHTML).toBe(
+          '<div class="test v-leave v-leave-active">foo</div>' +
+          '<div class="test test-enter test-enter-active">bar</div>'
+        )
+      }).thenWaitFor(nextFrame).then(() => {
+        expect(vm.$el.innerHTML).toBe(
+          '<div class="test v-leave-active">foo</div>' +
+          '<div class="test test-enter-active">bar</div>'
+        )
+      }).thenWaitFor(duration + buffer).then(() => {
+        expect(vm.$el.innerHTML).toBe(
+          '<div class="test">bar</div>'
+        )
+        vm.view = 'foo'
+      }).then(() => {
+        expect(vm.$el.innerHTML).toBe(
+          '<div class="test test-leave test-leave-active">bar</div>' +
+          '<div class="test v-enter v-enter-active">foo</div>'
+        )
+      }).thenWaitFor(nextFrame).then(() => {
+        expect(vm.$el.innerHTML).toBe(
+          '<div class="test test-leave-active">bar</div>' +
+          '<div class="test v-enter-active">foo</div>'
+        )
+      }).thenWaitFor(duration + buffer).then(() => {
+        expect(vm.$el.innerHTML).toBe(
+          '<div class="test">foo</div>'
+        )
+      }).then(done)
     })
   }
 })

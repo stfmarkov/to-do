@@ -353,10 +353,10 @@ function processIfConditions (el, parent) {
 }
 
 function addIfCondition (el, condition) {
-  if (!el.conditions) {
-    el.conditions = []
+  if (!el.ifConditions) {
+    el.ifConditions = []
   }
-  el.conditions.push(condition)
+  el.ifConditions.push(condition)
 }
 
 function processOnce (el) {
@@ -414,6 +414,7 @@ function processAttrs (el) {
       if (bindRE.test(name)) { // v-bind
         name = name.replace(bindRE, '')
         value = parseFilters(value)
+        isProp = false
         if (modifiers) {
           if (modifiers.prop) {
             isProp = true

@@ -98,7 +98,7 @@ declare type ASTElement = {
   ifProcessed?: boolean;
   elseif?: string;
   else?: true;
-  conditions?: ASTIfConditions;
+  ifConditions?: ASTIfConditions;
 
   for?: string;
   forProcessed?: boolean;
@@ -125,7 +125,7 @@ declare type ASTElement = {
   wrapData?: (code: string) => string;
 
   // weex specific
-  atom?: boolean;
+  appendAsTree?: boolean;
 }
 
 declare type ASTExpression = {

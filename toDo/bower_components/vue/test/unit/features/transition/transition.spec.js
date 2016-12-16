@@ -279,20 +279,32 @@ if (!isIE9) {
         data: { ok: true },
         methods: {
           beforeLeave: (el) => {
+            expect(el.style.display).toBe('')
             expect(el).toBe(vm.$el.children[0])
             expect(el.className).toBe('test')
             beforeLeaveSpy(el)
           },
-          leave: (el) => onLeaveSpy(el),
-          afterLeave: (el) => afterLeaveSpy(el),
+          leave: (el) => {
+            expect(el.style.display).toBe('')
+            onLeaveSpy(el)
+          },
+          afterLeave: (el) => {
+            expect(el.style.display).toBe('none')
+            afterLeaveSpy(el)
+          },
           beforeEnter: (el) => {
             expect(el.className).toBe('test')
+            expect(el.style.display).toBe('none')
             beforeEnterSpy(el)
           },
           enter: (el) => {
+            expect(el.style.display).toBe('')
             onEnterSpy(el)
           },
-          afterEnter: (el) => afterEnterSpy(el)
+          afterEnter: (el) => {
+            expect(el.style.display).toBe('')
+            afterEnterSpy(el)
+          }
         }
       }).$mount(el)
 
@@ -848,6 +860,13 @@ if (!isIE9) {
       }).thenWaitFor(duration + buffer).then(() => {
         expect(vm.$el.children[0].className).toBe('test')
       }).then(done)
+    })
+
+    it('warn when used on multiple elements', () => {
+      new Vue({
+        template: `<transition><p>1</p><p>2</p></transition>`
+      }).$mount()
+      expect(`<transition> can only be used on a single element`).toHaveBeenWarned()
     })
   })
 }

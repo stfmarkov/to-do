@@ -6,10 +6,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>ToDo</title>
-		<link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css">
-		<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
-		<link rel="stylesheet" href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
-		<link rel="stylesheet" href="/public/css/app.css">
+		<link rel="stylesheet" href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}">
+		<link rel="stylesheet" href="{{asset('assets/bootstrap/dist/css/bootstrap.min.css')}}">
+		<link rel="stylesheet" href="{{asset('assets/css/bootstrap-datetimepicker.min.css')}}">
+		<link rel="stylesheet" href="{{asset('css/app.css')}}">
 
     </head>
     <body>
@@ -43,18 +43,15 @@
 							:current="current"
 							v-on:category="addCategory"
 							v-on:delete="deleteCompleted"
-
 					></component>
 				</div>
 			</div>
 		</div>
-
-		<script src="/bower_components/jquery/dist/jquery.min.js"></script>
-		<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-		<script src="/bower_components/vue/dist/vue.js"></script>
-		<script src="/bower_components/moment/moment.js"></script>
-		<script src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-		<script src="/public/js/app.js"></script>
-
+		<script src="{{asset('assets/js/jquery.min.js')}}"></script>
+		<script src="{{asset('assets/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+		<script src="{{asset('assets/js/vue.js')}}"></script>
+		<script src="{{asset('assets/js/moment.js')}}"></script>
+		<script src="{{asset('assets/js/bootstrap-datetimepicker.min.js')}}"></script>
+		<script src="{{asset('js/app.js')}}"></script>
     </body>
 </html>

@@ -1,11 +1,24 @@
 /* @flow */
 
 import config from '../config'
-import VNode, { emptyVNode, cloneVNode, cloneVNodes } from '../vdom/vnode'
-import { normalizeChildren } from '../vdom/helpers/index'
+import VNode, {
+  cloneVNode,
+  cloneVNodes,
+  createTextVNode,
+  createEmptyVNode
+} from '../vdom/vnode'
 import {
-  warn, formatComponentName, bind, isObject, toObject, isServerRendering,
-  nextTick, resolveAsset, _toString, toNumber, looseEqual, looseIndexOf
+  warn,
+  identity,
+  isObject,
+  toObject,
+  nextTick,
+  toNumber,
+  _toString,
+  looseEqual,
+  looseIndexOf,
+  resolveAsset,
+  formatComponentName
 } from '../util/index'
 
 import { createElement } from '../vdom/create-element'
@@ -14,12 +27,18 @@ export function initRender (vm: Component) {
   vm.$vnode = null // the placeholder node in parent tree
   vm._vnode = null // the root of the child tree
   vm._staticTrees = null
-  vm._renderContext = vm.$options._parentVnode && vm.$options._parentVnode.context
-  vm.$slots = resolveSlots(vm.$options._renderChildren, vm._renderContext)
-  vm.$scopedSlots = null
-  // bind the public createElement fn to this instance
+  const parentVnode = vm.$options._parentVnode
+  const renderContext = parentVnode && parentVnode.context
+  vm.$slots = resolveSlots(vm.$options._renderChildren, renderContext)
+  vm.$scopedSlots = {}
+  // bind the createElement fn to this instance
   // so that we get proper render context inside it.
-  vm.$createElement = bind(createElement, vm)
+  // args order: tag, data, children, needNormalization, alwaysNormalize
+  // internal version is used by render functions compiled from templates
+  vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
+  // normalization is always applied for the public version, used in
+  // user-written render functions.
+  vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
   if (vm.$options.el) {
     vm.$mount(vm.$options.el)
   }
@@ -45,7 +64,7 @@ export function renderMixin (Vue: Class<Component>) {
       }
     }
 
-    if (_parentVnode) {
+    if (_parentVnode && _parentVnode.data.scopedSlots) {
       vm.$scopedSlots = _parentVnode.data.scopedSlots
     }
 
@@ -60,18 +79,14 @@ export function renderMixin (Vue: Class<Component>) {
     try {
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
-      if (process.env.NODE_ENV !== 'production') {
-        warn(`Error when rendering ${formatComponentName(vm)}:`)
-      }
       /* istanbul ignore else */
       if (config.errorHandler) {
         config.errorHandler.call(null, e, vm)
       } else {
-        if (isServerRendering()) {
-          throw e
-        } else {
-          console.error(e)
+        if (process.env.NODE_ENV !== 'production') {
+          warn(`Error when rendering ${formatComponentName(vm)}:`)
         }
+        throw e
       }
       // return previous vnode to prevent render error causing blank component
       vnode = vm._vnode
@@ -85,21 +100,21 @@ export function renderMixin (Vue: Class<Component>) {
           vm
         )
       }
-      vnode = emptyVNode()
+      vnode = createEmptyVNode()
     }
     // set parent
     vnode.parent = _parentVnode
     return vnode
   }
 
-  // shorthands used in render functions
-  Vue.prototype._h = createElement
   // toString for mustaches
   Vue.prototype._s = _toString
+  // convert text to vnode
+  Vue.prototype._v = createTextVNode
   // number conversion
   Vue.prototype._n = toNumber
   // empty vnode
-  Vue.prototype._e = emptyVNode
+  Vue.prototype._e = createEmptyVNode
   // loose equal
   Vue.prototype._q = looseEqual
   // loose indexOf
@@ -153,7 +168,6 @@ export function renderMixin (Vue: Class<Component>) {
   }
 
   // filter resolution helper
-  const identity = _ => _
   Vue.prototype._f = function resolveFilter (id) {
     return resolveAsset(this.$options, 'filters', id, true) || identity
   }
@@ -191,7 +205,7 @@ export function renderMixin (Vue: Class<Component>) {
     fallback: ?Array<VNode>,
     props: ?Object
   ): ?Array<VNode> {
-    const scopedSlotFn = this.$scopedSlots && this.$scopedSlots[name]
+    const scopedSlotFn = this.$scopedSlots[name]
     if (scopedSlotFn) { // scoped slot
       return scopedSlotFn(props || {}) || fallback
     } else {
@@ -241,21 +255,29 @@ export function renderMixin (Vue: Class<Component>) {
     return data
   }
 
-  // expose v-on keyCodes
-  Vue.prototype._k = function getKeyCodes (key: string): any {
-    return config.keyCodes[key]
+  // check v-on keyCodes
+  Vue.prototype._k = function checkKeyCodes (
+    eventKeyCode: number,
+    key: string,
+    builtInAlias: number | Array<number> | void
+  ): boolean {
+    const keyCodes = config.keyCodes[key] || builtInAlias
+    if (Array.isArray(keyCodes)) {
+      return keyCodes.indexOf(eventKeyCode) === -1
+    } else {
+      return keyCodes !== eventKeyCode
+    }
   }
 }
 
 export function resolveSlots (
-  renderChildren: ?VNodeChildren,
+  children: ?Array<VNode>,
   context: ?Component
 ): { [key: string]: Array<VNode> } {
   const slots = {}
-  if (!renderChildren) {
+  if (!children) {
     return slots
   }
-  const children = normalizeChildren(renderChildren) || []
   const defaultSlot = []
   let name, child
   for (let i = 0, l = children.length; i < l; i++) {

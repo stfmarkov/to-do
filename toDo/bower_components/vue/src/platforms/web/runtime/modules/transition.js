@@ -11,7 +11,7 @@ import {
   whenTransitionEnds
 } from '../transition-util'
 
-export function enter (vnode: VNodeWithData) {
+export function enter (vnode: VNodeWithData, toggleDisplay: ?() => void) {
   const el: any = vnode.elm
 
   // call leave callback now
@@ -51,10 +51,12 @@ export function enter (vnode: VNodeWithData) {
   // transition. One edge case to check is when the <transition> is placed
   // as the root node of a child component. In that case we need to check
   // <transition>'s parent for appear check.
-  const transitionNode = activeInstance.$vnode
-  const context = transitionNode && transitionNode.parent
-    ? transitionNode.parent.context
-    : activeInstance
+  let context = activeInstance
+  let transitionNode = activeInstance.$vnode
+  while (transitionNode && transitionNode.parent) {
+    transitionNode = transitionNode.parent
+    context = transitionNode.context
+  }
 
   const isAppear = !context._isMounted || !vnode.isRootInsert
 
@@ -96,7 +98,10 @@ export function enter (vnode: VNodeWithData) {
     mergeVNodeHook(vnode.data.hook || (vnode.data.hook = {}), 'insert', () => {
       const parent = el.parentNode
       const pendingNode = parent && parent._pending && parent._pending[vnode.key]
-      if (pendingNode && pendingNode.tag === vnode.tag && pendingNode.elm._leaveCb) {
+      if (pendingNode &&
+          pendingNode.context === vnode.context &&
+          pendingNode.tag === vnode.tag &&
+          pendingNode.elm._leaveCb) {
         pendingNode.elm._leaveCb()
       }
       enterHook && enterHook(el, cb)
@@ -117,6 +122,7 @@ export function enter (vnode: VNodeWithData) {
   }
 
   if (vnode.data.show) {
+    toggleDisplay && toggleDisplay()
     enterHook && enterHook(el, cb)
   }
 
@@ -253,12 +259,15 @@ function once (fn: Function): Function {
   }
 }
 
+function _enter (_: any, vnode: VNodeWithData) {
+  if (!vnode.data.show) {
+    enter(vnode)
+  }
+}
+
 export default inBrowser ? {
-  create (_: any, vnode: VNodeWithData) {
-    if (!vnode.data.show) {
-      enter(vnode)
-    }
-  },
+  create: _enter,
+  activate: _enter,
   remove (vnode: VNode, rm: Function) {
     /* istanbul ignore else */
     if (!vnode.data.show) {
