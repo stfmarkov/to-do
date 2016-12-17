@@ -43,6 +43,7 @@
 							:tasks = 'tasks'
 							:current="current"
 							:scheduled="scheduled"
+							:today="today"
 							v-on:category="addCategory"
 							v-on:delete="deleteCompleted"
 					></component>

@@ -262,6 +262,8 @@ a:visited {
   transition: 1s;
   display: -webkit-box;
   display: flex;
+  -webkit-box-align: center;
+  align-items: center;
 }
 
 .tasks__item.tasks__item_completed {
@@ -325,6 +327,16 @@ a:visited {
 .tasks__text:focus {
   border: none;
   outline: none;
+}
+
+.tasks__schedule {
+  color: #999;
+  font-size: .8em;
+  min-width: 40px;
+}
+
+.tasks__schedule_red {
+  color: #9C1B00;
 }
 
 .tasks__input {

@@ -9,7 +9,8 @@
                         class="tasks__item clearfix"
                     >
                         <input type="text" v-model="task.name" class="tasks__text">
-                        <span class="tasks__text"> for {{task.schedule.day}} / {{task.schedule.month}}</span>
+                        <span v-show="isLate(task)" class="tasks__schedule">{{task.schedule.day}} / {{task.schedule.month}}</span>
+                        <span v-show="!isLate(task)" class="tasks__schedule tasks__schedule_red">{{task.schedule.day}} / {{task.schedule.month}}</span>
                          <span @click.stop='deleteTask(task)' class="tasks__delete tasks__control">
                              <i class="fa fa-times" aria-hidden="true"></i>
                           </span>
@@ -48,11 +49,13 @@
                 v-show="tasksCompleted"
         >Delete completed</button>
     </div>
+
+
 </template>
 
 <script>
     export default {
-        props:['tasks', 'current', 'scheduled'],
+        props:['tasks', 'current', 'scheduled', 'today'],
         data: function(){
             return{
                 newTask:'',
@@ -85,6 +88,7 @@
             inProgress: function(task){
                 return !task.completed;
             },
+            //Check if the task is from the selected category
             isCurrent:function(task){
                 if(this.current == "all"){
                     return true
@@ -95,12 +99,29 @@
                 else
                     return false
             },
+            //Check if the task is from the day
             isToday:function(task){
                 if(task.schedule.day == this.scheduled.day){
                     return true
                 }else if(this.scheduled.day == undefined){
                     return true
                 }else{
+                    return false
+                }
+            },
+            isLate: function(task){
+                if(task.schedule.year > this.today.year){
+                    console.log('year');
+                    return true
+                }else if(task.schedule.month > this.today.month){
+                    console.log(task.schedule.month);
+                    console.log(this.today);
+                    return true
+                }else if(task.schedule.day > this.today.day){
+                console.log('day');
+                    return true
+                }else{
+                console.log('in time');
                     return false
                 }
             },
@@ -120,7 +141,7 @@
                                         name: this.newTask,
                                         category:this.taskCategory,
                                         completed: false,
-                                        schedule:this.schedule,
+                                        schedule:this.taskDate,
                                      });
                     this.$emit('category',this.taskCategory);
                     this.newTask = '';

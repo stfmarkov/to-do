@@ -20,14 +20,23 @@ const app = new Vue({
             { name:'weekend', edit: false },
         ],
         tasks:[
-            { name:'do the dishes', category: 'home', completed:false, schedule:{day: "15", month: "12", time: "5:51", year: "2016"},},
-            { name:'wash the floor', category: 'home', completed:false, schedule:'',},
+            { name:'do the dishes', category: 'home', completed:false, schedule:{day: "2", month: "12", time: "5:51", year: "2016"},},
+            { name:'wash the floor', category: 'home', completed:false, schedule:{day: "16", month: "12", time: "5:51", year: "2016"},},
             { name:'star the new project', category: 'office', completed:false, schedule:{day: "15", month: "12", time: "5:51", year: "2016"},},
-            { name:'call the client', category: 'office', completed:false, schedule:'',},
+            { name:'call the client', category: 'office', completed:false, schedule:{day: "16", month: "12", time: "5:51", year: "2016"},},
             { name:'finish the project', category: 'office', completed:false, schedule:{day: "15", month: "12", time: "5:51", year: "2016"},},
-            { name:'call John', category: 'weekend', completed:false, schedule:'',},
-            { name:'play football', category: 'weekend', completed:false, schedule:'',},
+            { name:'call John', category: 'weekend', completed:false, schedule:{day: "17", month: "12", time: "5:51", year: "2016"},},
+            { name:'play football', category: 'weekend', completed:false, schedule:{day: "18", month: "12", time: "5:51", year: "2016"},},
         ]
+    },
+    computed:{
+        today: function(){
+            let date = new Date;
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+            let year = date.getFullYear();
+            return {day: day, month: month, year: year};
+        },
     },
     methods:{
         makeCurrent: function(category){
